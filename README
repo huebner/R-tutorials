@@ -1,0 +1,14 @@
+Order of R tutorials
+Marianne Huebner 2015-04-25
+
+1. Rintro1:  Introduction to R and Rstudio (7 pages)
+2. Rintro2: Introduction to R markdown  (3 pages)
+3. Rintro3: Reading and saving data in Rstudio  (3 pages)
+4. Rprobdiscrete: Discrete Probability Distributions with R  (4 pages)
+5. Rprobcontinuous: Continuous Probability Distributions with R  (5 pages)
+6. Rinference_prop: Inference for proportions (6 pages)
+7. Rinference_mean: Inference for means  (6 pages)
+8. Rpower: Hypothesis test for mean: power and sample size  (4 pages)
+9. Rcategorical: Categorical data analysis: Two way contingency tables (4 pages)
+10. Rregression: Linear Regression Analysis (9 pages)
+11. Rmultireg: Multiple Regression (9 pages)
