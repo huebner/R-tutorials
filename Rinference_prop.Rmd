@@ -1,0 +1,195 @@
+---
+title: "Inference for proportions"
+output: pdf_document
+---
+
+### Example: Coin tosses
+Simulate 100 coin tosses.
+
+```{r }
+heads <- rbinom(100, size = 1, prob = .5)
+heads
+x=sum(heads) #number of heads in the 100 coin tosses
+```
+
+
+There were x= `r x` heads in 100 coin tosses.
+
+## Calculating confidence intervals for $p$
+
+We generated the sequence of heads and tails with probability of head = 0.5.  When estimating confidence intervals for $p$, is 0.5 part of the interval? The following one sample proportion interval uses the normal approximation to the binomial distribution with or without the continuity correction.
+
+```{r }
+prop.test(x, 100)          # continuity correction TRUE by default
+prop.test(x, 100, correct = FALSE)  # without continuity correction
+prop.test(x, 100, conf.level=0.95)   # confidence level of 0.95 is the default
+```
+
+We cannot guarantee that 95% of all confidence intervals calculated in this way contain the true probability $p$. This is called "coverage." For small samples the Agresti-Coull interval has better coverage. Here we add 2 successes and 2 failures to each sample:
+$$
+\tilde{p}=\frac{x+2}{n+4}
+$$
+
+There are many others types of one sample proportion confidence intervals:
+
+```{r}
+library(binom)
+binom.confint(x, 100)
+
+```
+
+## Confidence intervals and hypothesis tests for $p$
+
+Save the output in an object named temp.
+
+```{r }
+temp<-prop.test(x, 100) 
+```
+
+```names(temp)``` shows us what output is generated and the names of the output objects.
+
+
+Confidence interval for the proportion of heads
+
+```{r }
+temp$conf.int
+```
+
+Estimated proportion
+
+```{r }
+temp$estimate
+```
+
+P value for the hypothesis test $H_0: p=0.5$ versus $H_1: p \ne 0.5$
+
+```{r }
+temp$p.value
+```
+
+
+The exact test is based on binomial probabilities:
+
+```{r }
+binom.test(sum(heads),100)
+```
+
+
+## Coverage of confidence intervals
+
+
+For a  sample size 30 and true probability 0.5, how many one proportion z intervals with 95% confidence would contain the true p=0.5?
+
+```{r}
+
+n=30
+p=0.5
+sample<-rbinom(n, 1, p)  # simulate n trials of successes and failures
+x<-sum(sample)  # number of success in n trials
+result <- prop.test(x, n, conf.level=0.95)  # calculate a 95% confidence interval
+```
+ Next check whether the true p lies within the confidence interval. If yes, return "1". If no, return "0"
+ ```{r}
+
+count=0       # 1= yes, the confidence interval contains p, 0 otherwise.
+    lb <- result$conf.int[1]
+    ub <- result$conf.int[2]
+    if(p < ub & p > lb){
+      count=1
+    } else {
+      count=0
+    }
+
+```
+
+Repeat this with 1000 samples. We can do this over and over again, of we write a function.
+
+```{r}
+sim<-function(t=1000, n=100, p=0.3, clevel=0.95){
+count<-rep(NA, t)
+
+for(i in 1:t){
+sample<-rbinom(n, 1, p)
+x<-sum(sample)
+result <- prop.test(x, n, conf.level=clevel)
+    lb <- result$conf.int[1]
+    ub <- result$conf.int[2]
+    if(p < ub & p > lb){
+    count[i]=1
+    } else {
+        count[i]=0
+    }
+}
+
+return(100*sum(count)/t)
+}
+
+```
+
+Let's check for 1000 intervals.
+
+```{r}
+t=1000
+pct<-sim(t=1000, n=30, p=0.5, clevel=0.95)
+```
+
+Among the `r t` 95% confidence intervals based on `r t` samples there were pct = `r pct` % confidence intervals that contained the true $p$. 
+
+Is this what you would expect?
+
+What about 80% confidence interval coverage?
+
+```{r}
+sim(t=1000, n=30, p=0.5, clevel=0.8)
+```
+
+
+## Inference for comparing two proportions $p_1-p_2$
+
+### Example Cat Bites:
+Among adults with cat bites, is the proportion of women bitten higher among patients with depression compared to without depression? 
+More often than women without depression?
+
+*Reference: Hanauer DA, Ramakrishnan N, Seyfried LS (2013) Describing the Relationship between Cat Bites and Human Depression Using Data from an Electronic Health Record. PLoS ONE 8(8): e70585. doi:10.1371/journal.pone.0070585  University of Michigan, Ann Arbor.*
+
+
+In the dataset extracted from electronic health records during a 3 year period
+in southeastern Michigan there were 750 patients seeking medical care for cat bites. Among those 310 suffered from depression.
+
+
+```{r}
+bites<-matrix(c(258, 306, 310-258, 440-306 ), 2,2)
+colnames(bites)<-c("female", "male")
+rownames(bites)<-c("depression", "no depression")
+bites
+```
+
+2-sample test for equality of proportions with continuity correction
+sample 1 = depression, sample 2 = no depression
+```{r}
+prop.test(bites,conf.level=0.95) 
+```
+The results indicate that among adults with catbites, the proportion of women are higher in patients with depression than without depression.  
+
+### Extracting confidence intervals and results from hypothesis tests from the output
+```{r}
+temp<-prop.test(bites,conf.level=0.95)
+# names(temp) shows us what output values are available
+```
+
+Confidence interval for the difference in the proportions for $p_1$=proportion of women in sample 1 (depression), 
+$p_2$=proportion of women in sample 2 (no depression)
+```{r}
+temp$conf.int
+```
+
+Sample proportions: 
+```{r}
+temp$estimate
+```
+
+P-value of the hypothesis test $H_0: p_1=p_2$ versus $H_A: p_1 \ne p_2$:
+```{r}
+temp$p.value
+```
+

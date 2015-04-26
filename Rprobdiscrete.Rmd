@@ -1,0 +1,124 @@
+---
+title: "Discrete Probability Distributions with R"
+output: pdf_document
+---
+
+### Discrete probability distribution
+
+A discrete random variable $X$ has probability distribution
+
+|  x |  1 |  2 | 3  |  4 |  5 | 6  | 7  |
+|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| P(X=x)  |  0.1 | 0.1  |  0.4 | 0.3  | 0.05  | 0.03  |  0.02 |
+
+Then we can calculate the expectation and cumulative distribution function in R as follows.
+
+```{r}
+x<-c(1,2,3,4,5,6,7)     # values of the random variable X
+p<-c(0.1,0.1,0.4,0.3,0.05,0.03, 0.02);  # P(X=x)
+mu<-sum(x*p); mu   # expectation
+sqrt(sum(p*(x-mu)^2))   # standard deviation
+cumsum(p)  # cumulative distribution
+```
+
+$P(X\le 3)$ = `r sum(p[1:3])`  using `sum(p[1:3])`.
+
+$P(X =  3)$ = `r p[3]` using `p[3]`.
+
+$P(2 \le X \le  4)$ = `r sum(p[2:4])` using `sum(p[2:4])`.
+
+
+
+
+### Binomial distribution
+Suppose there are 10 multiple choice questions. Each question has 5 choices,  and only one of these is correct. What is the probability getting two or fewer correct answers, if you guess each answer at random.
+```{r}
+pbinom(2, size=10, prob=0.2)
+```
+This is the *cumulative distribution function.*
+
+What is the probability of getting seven or more correct?
+```{r}
+1-pbinom(6, size=10, prob=0.2)
+```
+
+What is the probability of getting exactly two answers correct?
+```{r}
+dbinom(2, size=10, prob=0.2)
+```
+This is the *probability density function.*
+
+Calculate the probability of getting two or fewer answers correct with the probability density function.
+```{r}
+dbinom(0,10,0.2) +dbinom(1,10,0.2)+dbinom(2,10,0.2)
+# or
+sum(dbinom(0:2,10,0.2))
+```
+
+Calculate $P(5< X <10)$ for $X$ ~ Binomial(30, 0.5)
+```{r}
+sum(dbinom(6:9, 30, 0.5))
+```
+
+*Inverse cumulative distribution function*
+```{r}
+qbinom(0.5,size=15, prob=0.2)
+```
+
+There is at least a 50% chance of getting 3 or fewer successes in 15 trials with success probability 0.2. 
+Check
+```{r}
+pbinom(3, size=15, prob=0.2)
+pbinom(2, size=15, prob=0.2)
+```
+
+
+### Poisson distribution
+
+
+A university police department writes, on average, five tickets per day. 
+Suppose the number of tickets written per day follows a Poisson distribution with 
+a mean of  8.8 tickets per day. Find the probability that less than 
+six tickets are written on a randomly selected day from this distribution.
+Note: All these numbers are made up.
+
+*Cumulative distribution function.*
+```{r}
+ppois(5, lambda=8.8)
+```
+
+What is the probability of writing seven or more tickets?
+```{r}
+1-ppois(6, lambda=8.8)
+```
+
+*Probability density function.*
+```{r}
+dpois(6, lambda=8.8)
+```
+
+
+Calculate the probability of writing two or fewer tickets  with the probability density function.
+```{r}
+dpois(0, lambda=8.8) +dpois(1, lambda=8.8)+dpois(2, lambda=8.8)
+# or
+sum(dpois(0:2,8.8))
+```
+
+Calculate P(5< X <10) for X ~ Poisson(lambda=8.8)
+```{r}
+sum(dpois(6:9, 8.8))
+```
+
+*Inverse cumulative distribution function.*
+```{r}
+qpois(0.2,lambda=8.8)
+```
+There is at least a 20% chance that the police department issued 6 or fewer tickets.
+Check
+```{r}
+ppois(6, lambda=8.8)
+ppois(5, lambda=8.8)
+```
+
+

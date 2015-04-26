@@ -1,0 +1,148 @@
+---
+title: "Linear Regression Analysis"
+output: pdf_document
+---
+
+### Example: Association of boiling point and pressure
+ In the 1840s and 1850s a Scottish physicist, James D. Forbes, wanted to be able to estimate 
+ altitude above sea level from measurement of the boiling point of the water. 
+ He studied the relationship between boiling point and pressure. Forbes’ theory suggested 
+ that over the range of observed values the graph of boiling point versus the logarithm of 
+ pressure yields a straight line. Since the logs of the pressures do not vary much, all 
+ values of log(press) are multiplied by 100. This avoids studying very small numbers, 
+ without changing the major features of the analysis.   
+ *Reference: S. Weisberg. Applied Linear Regression. Wiley 2005.*
+
+```{r }
+# load the data and attach the dataset
+library(MASS)
+data(forbes)
+
+# Transform the pressure to 100*log(pressure) using a base 10 logarithm
+forbes$hlpr<-100*log10(forbes$pres)
+forbes$boil<-forbes$bp
+```
+
+Create a scatter plot of the predictor versus the response. 
+
+```{r fig.width=4, fig.height=4}
+plot(hlpr~pres, data=forbes)
+```
+
+**This looks like a reasonable linear relationship.**
+
+
+Create summary statistics and calculate the correlation coefficient
+``` {r}
+summary(forbes$boil)
+summary(forbes$hlpr)
+cor(forbes$boil,forbes$hlpr)
+```
+
+Fit a linear regression model and look at the regression output
+``` {r}
+fit<-lm(hlpr~boil, data=forbes)
+summary(fit)  
+```
+**The boiling point is a sigificant predictor for 100 log(pressure).**
+
+Draw a scatter plot with the regression line.
+```{r , fig.width=3, fig.height=3}
+plot(hlpr~pres, data=forbes)
+abline(lm(hlpr~pres, data=forbes), col="red")
+```
+
+Regression coefficients: this is the slope
+```{r}
+fit$coefficients[2]
+```
+Note that the estimated regression line is `hlpr=fit$coefficients[1]+fit$coefficients[2]*boil` namely  hlpr= `r fit$coefficients[1]` + `r fit$coefficients[2]` boil.
+
+R square and adjusted R square indicate how much variation of the response (hlpr) is explained by regression on the boiling point.
+
+```{r}
+summary(fit)$r.squared
+summary(fit)$adj.r.squared
+```
+
+How scattered are the points around the line?
+```{r}
+summary(fit)$sigma
+```
+
+
+Calculate a 95% CI for the slope
+```{r}
+tble<-summary(fit)$coefficients
+slope.mean<-tble[2,1]
+slope.se<-tble[2,2]
+df<-fit$df.residual
+critval<-abs(qt(0.025,df))
+
+CIlow<-slope.mean-critval*slope.se
+CIup<-slope.mean+critval*slope.se
+```
+A 95% CI for the slope is (`r CIlow`, `r CIup`).
+
+Here are a number of summaries:
+```{r}
+coefficients(fit) # model coefficients
+confint(fit, level=0.95) # CIs for model parameters 
+fitted(fit) # predicted values
+residuals(fit) # residuals
+anova(fit) # anova table  
+influence(fit) # regression diagnostics
+```
+
+Is the boiling point statistically significantly associated with HLPR?
+
+```{r}
+pval<-tble[2,4]  
+```
+
+**The p value for testing $H_0: \beta = 0$ vs $H_1: \beta \ne 0$ is `r pval`.**
+
+
+### Diagnostics and Residual Analysis
+
+
+Is there evidence that the residuals do not follow a normal distribution?
+```{r, fig.width=3, fig.height=3}
+qqnorm(fit$residuals)
+qqline(fit$residuals)
+```
+
+**It appears there is one outlier.**
+
+Make a residual plot.
+```{r, fig.width=3, fig.height=3}
+fit.stdres = rstandard(fit)
+plot(fit$fitted, fit.stdres, xlab="Fitted values", ylab="Standardized residuals")
+abline(h=0, col=2, lwd=2)
+```
+
+You can identify the point with the largest residual by using `identify(fit$fitted, fit.stdres)` click on the point in questions and then click Esc. This will identify the point as the 12-th record  in the dataset.
+
+
+In the presence of outliers, it is useful to do the analysis with and without the point.
+Remove large residuals.
+```{r}
+indx<-which(fit.stdres>2)
+forbes1<-forbes[-indx,]
+```
+
+Redo regression analysis with this outlier removed
+```{r}
+fit1<-lm(hlpr~boil, data=forbes1)
+summary(fit1)
+```
+**The regression fit and coefficient of determination did not change much.**
+
+```{r, fig.width=3, fig.height=3}
+fit.stdres = rstandard(fit1)
+plot(fit1$fitted, fit.stdres, xlab="Fitted values", ylab="Standardized residuals")
+abline(h=0, col=2, lwd=2)
+```
+
+**There are no obvious outliers in this plot after the point was removed.**
+

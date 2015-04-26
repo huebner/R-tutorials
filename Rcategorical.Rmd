@@ -1,0 +1,61 @@
+---
+title: 'Categorical data analysis: Two way contingency tables'
+output: pdf_document
+---
+
+Students in grades 4-6 were asked whether good grades, athletic ability, or popularity was most important to them. The responses were divided by school area into urban, suburban, and rural. Is there an association between the type of school area and the students' choice of good grades, athletic ability, or popularity as most important?  
+
+*Reference: Chase, M.A and Dummer, G.M. (1992), "The Role of Sports as a Social Determinant for Children," Research Quarterly for Exercise and Sport, 63, 418-424. Dataset available through the Statlib Data and Story Library (DASL).*
+
+```{r}
+grades<-c(38, 58, 69)
+popular<-c(34, 28, 17)
+sports<-c(28, 14, 14)
+kids<-rbind(grades,popular, sports)
+colnames(kids)<-c("rural" , "suburban", "urban")
+```
+
+Adding row and column sums:
+```{r}
+addmargins(kids)
+```
+
+Adding row and column sums, calculating proportions
+```{r}
+addmargins(kids)
+prop.table(kids)                # cell proportion= cell count/total
+apply(prop.table(kids),1,sum)   # row proportions
+apply(prop.table(kids),2,sum)   # column proportions
+```
+
+Performing a test of independence of the two categories school area and important aspects:
+```{r}
+fit<-chisq.test(kids)
+fit
+```
+
+Full information for each cell of observed, expected, and residuals
+```{r}
+fit$observed
+fit$expected
+fit$residuals
+```
+
+Contribution of each cell to the test statistic:
+```{r}
+(fit$observed-fit$expected)^2/ fit$expected
+```
+
+Visualization of a two-way contingency table:
+
+```{r fig.width=5, fig.height=5}
+library(vcd)
+mosaic(kids, shade=TRUE, legend=TRUE)
+barplot(kids, beside=T, legend=T)
+
+# if column sums do not add up to 100 as in the example, the following will produce such barplots
+#x<-prop.table(kids,2)
+#barplot(x, beside=T, legend=T)
+```
+
+__Results: For 4-6 graders the importance of grades, popularity, athletic ability seems to be associated with the type of school area (urban, suburban, or rural). In particular, grades seem to be less important than expected in a rural school and athletic ability more important than expected in a rural school. The side-by-side barplots seem to indicate that grades become increasingly important for more urban type school areas.__

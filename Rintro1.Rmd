@@ -1,0 +1,168 @@
+---
+title: "Introduction to R and Rstudio"
+output: pdf_document
+---
+
+### Download and install R and Rstudio
+1.  Go to http://www.r-project.org. This is the home page for the R project.
+2.	On this page click on the link with the words Download R.
+3.	There is a list of many web servers from which you can download R. Choose one of these. The one in Iowa is faster than the one in Michigan.
+4.	Near the top of the page will be a section titled Download and install R. Choose whether it is for Windows or for a MAC.
+5.	Next install Rstudio. This is an interface for R that students find easier to use.
+6.	Go to http://www.rstudio.com/
+7.	Click on Download Rstudio
+8.	Click on the Desktop iccon
+9.	Under Open Source Edition Click on Download Rstudio Desktop.
+10.	Choose the version for MAC or Windows.
+11.	Follow the instruction in the pop-up windows.
+
+### Before you start
+Create a folder *Statwork* where you can save relevant documents. Create subfolders, e.g. *Rstudio* and *Documents* and *Data*, where you will save your computational work.
+
+### R script
+In Rstudio click on File > New File > R script. In this window you can type code and comments (with # sign for comments) that you can save to your folder. When you highlight a piece of code and click Run it will copy the code to the Console window and execute. Alternatively, you can type directly into the Console window, but it won't save your text.
+
+
+
+##Important: 
+Click on Session > Set Working Directory > To Source File Location. Then Rstudio will know where to save your putout from your work. You can check your working directory anytime in the Console of Rstudio by typing
+
+```{r, include=FALSE}
+getwd()
+```
+
+
+
+
+
+## Examples of calculations in R/Rstudio
+
+
+```{r}
+2 + 3 * 5    # Note the order of operations.
+log(10)      # Natural logarithm with base e=2.718282
+4^2    	 # 4 raised to the second power
+3/2          # Division
+sqrt(16)     # Square root
+abs(3-7)     # Absolute value of 3-7
+exp(2)       # exponential   function
+15 %/%4      # This is the integer divide operation
+
+# This is a comment line
+```
+
+Let's type a data list into R. The letter "c" stands for "concatenate".
+
+```{r}
+
+x = c(1, 3, 7, 9, 11, 13, 20)
+x
+
+```
+
+Note that in the output the square bracket [1] refers to the first line of output. Sometimes you may have longer lines. They will be broken up and numbered this way.
+
+Suppose you made an error and really wanted the first number in the data list called x to be a 10.
+
+```{r}
+x[1] = 10
+x
+
+```
+
+This is a quick way to change something without retyping the whole data list. You can check a number of things in your data list:
+
+```{r}
+x[3]      # the third element of x
+x[3:5]    # the third to fifth element of x, inclusive
+x[x>3]    # list of elements in x greater than 3
+
+```
+
+You can also add a constant to each element in your data list or multiply by a constant:
+
+```{r}
+x
+x+1
+x*2
+```
+
+R is case sensitive, so if you type upper case X instead of the lower case X, you will get an error message.
+
+```{r, error=TRUE}
+X
+```
+Note: I prefer lower case names for variables. Then I don't have to remember whether a name was upper or lower case.
+
+
+Now you have created a data list for which you can calculate data summaries, e.g.
+
+```{r}
+mean(x)
+sd(x)
+IQR(x)
+summary(x)
+```
+
+## More on data elements in R/Rstudio
+
+Basics with data lists (vectors)
+```{r}
+### basics with data vectors
+x<-c(1,3,2,10,5)
+x
+sum(x)
+summary(x)
+sort(x, decreasing=T)
+
+y<-1:5
+y+2
+y*2
+y^2
+
+length(x)
+length(y)
+
+x+y
+z<-cbind(x,y)
+z<-rbind(x,y)
+```
+
+Basics with data matrices
+```{r}
+
+ A<-matrix(c(1,2,3,4), nrow=2, ncol=2); A
+ rownames(A)<-c("row1", "row2")
+ colnames(A)<-c("col1", "col2")
+ dim(A)
+A<-matrix(c(1,2,3,4),byrow=TRUE);A
+
+sqrt(A)
+A^2
+
+B<-matrix(c(1,2,3,4,5,6),nrow=2,ncol=3, byrow=T);B
+B[order(B[,1], decreasing=T),]
+B[1,2]
+B[2,]  # second row
+t(B)   # transpose of B
+B[-1,] # remove first row
+B[,-c(1,3)]  # remove first and third column
+```
+
+## Data frames in R
+A data frame in R gathers together all the variables in a data set.
+```{r}
+library(SemiPar)  # if this generates and error message, do the following first: install.packages("SemiPar")
+data(fuel.frame)
+car<-fuel.frame
+names(car)
+dim(car)
+car[1:3,]
+unique(car$car.name)[1:3]  # specify the variable name after a dollar sign
+mean(car$Mileage)
+table(car$Type)
+```
+
+
+## Finish your R/Rstudio session
+When you close Rstudio (e.g. click on the red button). It will ask you whether you want to save the R work space. I never do. If you have written all your code in a text file, script file or R markdown file, you can always pull it up and recreate what you have done. 

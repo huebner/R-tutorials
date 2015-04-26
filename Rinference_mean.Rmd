@@ -1,0 +1,227 @@
+---
+title: "Inference for means"
+output: pdf_document
+---
+
+## Confidence Interval for $\mu$
+The formula for a confidence interval for the sample mean is
+
+$$
+\bar{x} \pm t^*_{n-1} s/\sqrt{n}
+$$
+
+where $t^*$ is the critical value from the t-distribution and depends on the confidence level. For example, to calculate a 95% confidence interval for 19 observations (= 18 degrees of freedom), the critical value is
+ 
+```{r}
+qt(.975,18)
+```
+
+
+Note that to get a t interval and t test  the same function is used.
+Type
+````r
+?t.test 
+````
+to check what
+options are available
+
+
+#### Example: Detergents
+The production of a nationally marketed detergent results in certain workers receiving 
+prolonged exposure to the bacillus subtilis enzyme. Nineteen workers were tested to 
+determine the effects of these exposures on various respiratory functions. 
+The airflow rate, FEV1, is the ratio of a person’s forced expiratory volume to the 
+vital capacity, VC (max. volume of air a person can exhale after taking a  deep breath). 
+If the enzyme has an effect, it will be to reduce the FEV1/VC ratio. The norm is 0.80 in  persons with no lung dysfunction.
+
+
+```{r}
+ratio<-c(0.61, 0.70, 0.63, 0.76, 0.67, 0.72, 0.64, 0.82, 0.88, 
+0.82, 0.78, 0.84, 0.83, 0.82, 0.74, 0.85, 0.73, 0.85, 0.87)
+```
+
+There were measurements from `r length(ratio)` workers.
+
+
+
+Assumptions for the t-interval are
+* data are from a simple random sample
+  * independent
+  * identically distributed
+* approximately normal distributed
+
+The workers are likely unrelated and thus the independence assumption is satisfied.
+A Q-Q plot indicates the normal distribution of the data. 
+
+```{r fig.width=4, fig.height=4}
+qqnorm(ratio)
+qqline(ratio)
+```
+
+A 90% confidence interval (t-interval) can be obtained with
+
+```{r}
+temp<-t.test(ratio, mu=0.80, conf.level=0.90)
+temp
+```
+
+Specifically, the confidence interval is
+```{r}
+temp$conf.int
+```
+
+The sample mean is
+```{r}
+temp$estimate
+sd(ratio)
+```
+
+#### Answer: 
+__A 90% confidence interval for the FEV1/VC ratio is (`r temp$conf.int[1]`, `r temp$conf.int[2]`). This includes 
+the true (normal) value of `r temp$null.value`.__
+
+
+A 95% confidence interval would be 
+```{r}
+t.test(ratio, mu=0.80, conf.level=0.95)$conf.int
+```
+
+## Hypothesis test for $\mu$
+
+For a hypothesis test on the population mean the null hypothesis is
+$$
+H_0: \mu = \mu_0
+$$
+with test statistic
+$$
+t=\frac{\bar{x}-\mu_0}{s/\sqrt{n}}
+$$
+The test statistic $t$ has t-distribution with $n-1$ degrees of freedom.
+
+#### Detergent example continued
+If the enzyme has an effect, it will be to reduce the FEV1/VC ratio. The norm is 0.80 in  persons with no lung dysfunction. Hence the research question is whether the ratio is lower than normal. This is a one sided
+hypothesis test, namely the alternative is $H_A: \mu < 0.80.$
+
+
+```{r}
+temp.1sided<-t.test(ratio, mu=0.80, alternative="less")
+````
+
+
+#### Answer: 
+__The pvalue is `r temp.1sided$p.value`. The data provide evidence that exposure to B. subtilis may reduce the FEV1/VC ratio, but are inconclusive at the 5%  significance level.__
+
+
+## Coverage of confidence intervals
+
+An aspirin manufacturer fills bottles by weight rather than by count. The weight per tablet should be 5 grains.  Simulate a sample of 100 tablets taken from a very large lot. 
+Suppose 20 tablets are sampled from a lot with mean weight 5 grains and standard deviation 0.3 grains. A 95% confidence interval is calculated. Does this confidence interval contain the true mean?
+
+Take `sims =100` such samples of 20 tablets:
+```{r}
+sims = 100
+weights = replicate(sims,rnorm(20,mean=5,sd=0.3))
+```
+Calculate 95% confidence intervals for each sample:
+
+```{r}
+tint<-matrix(NA, nrow=dim(weights)[2], ncol=2)
+for(i in 1:dim(weights)[2]){
+temp<-t.test(weights[,i], conf.level = 0.95)
+tint[i,]<-temp$conf.int
+}
+colnames(tint)<-c("lcl","ucl")
+```
+
+Check the first 10 confidence intervals from these samples:
+```{r}
+tint[1:10,]
+```
+
+How many of these 100 confidence intervals contain the true mean?
+```{r}
+tint = data.frame(tint)
+indx = (tint$lcl <=5) & (tint$ucl>=5)
+sum(indx)
+```
+
+In this simulation `r sum(indx)` of the 100 confidence intervals (95% confidence level) contain the true mean. How many would you expect?
+
+## Inference for comparing means $\mu_1-\mu_2$
+
+The confidence interval for comparing two means  from independent samples is given by
+
+$$
+ \bar{x}_1 - \bar{x}_2 \pm  t^*  \sqrt{ \frac {s_1^2}{n_1} + \frac {s_2^2}{n_2} } 
+$$
+
+The confidence interval for comparing two means from dependent samples is given by
+
+$$
+  \bar{x}_d \pm t^*\,  s_d/\sqrt{n} 
+$$  
+
+where $t$ is from a t-distribution with $n-1$ degrees of freedom. The $n$ differences are treated as one sample, and $\bar{x}$ is denoted as $\bar{x}_d$, $s$ is denoted as $s_d$, and $\mu$ is denoted as $\mu_d$. The index $d$ stands for "difference.""
+
+
+### Example: Change of internet user per 100 people from 2001 to 2011
+Internet users per 100 people downloaded from GAPMINDER (http://www.gapminder.org/data/)
+subset of 15 countries.
+
+There are 15 countries in 2001 and 2011.
+
+```{r }
+countries<-c("Argentina" ,"Australia","Belgium","Canada", "Egypt","France", "Germany",
+  "Greece",  "India" , "Japan" , "Mexico" ,"Niger","Singapore", "United.Kingdom", "United.States")
+Y2011<-c(17.72058337, 63.02693628,  55.47689608,	71.59660113,	11.69839821,	41.39108117,
+         68.76941828,	24.17107186,	2.388075,	66.19826223,	17.21,	0.221341351,	61.00284566,
+         69.9749171,	68.26789985)
+Y2001<-c(9.780807285,  52.60563888,	31.05933918,	59.97791664,	0.838945611,	25.48284606,
+         31.66413443,	11.0173514,	0.660146377,	38.15162324,	7.038023117,	0.105185431,
+         40.08896306,	33.47495977,	49.18000685)
+```
+
+__Is there a sigificant change in internet users from 2001 to 2011 in these countries?__
+
+If we consider the internet users per country as dependent samples the corresponding hypotheses are $H_0 : \mu_d = 0$ vs  $H_A : \mu_d \ne 0$.
+
+```{r }
+t.test(Y2001, Y2011, paired=TRUE)
+```
+
+We could argue that a lot changes in 10 years and internet uses in 2001 are a different breed from internet users in 2011 and the number of internet users has increased, then we would be testing independent samples of no change versus the alternative hypothesis 
+that in 2001 were fewer internet users with hypotheses  $H_0 : \mu_{2001} = \mu_{2011}$ vs  $H_A : \mu_{2001} < \mu_{2011}$.
+
+```{r }
+t.test(Y2001, Y2011, alternative="less")
+```
+
+To check the validity of this statistical methods for the data in question, we need to also check whether the data are approximately normally distributed.
+
+```{r setup, include=FALSE}
+#knitr::opts_chunk$set(dev = 'pdf')
+```
+
+
+
+```{r, echo=FALSE, fig.width=5, fig.height=3 }
+par(mfrow=c(1,2))
+qqnorm(Y2001, main="2001", xlab="", ylab="", cex=0.8); qqline(Y2001)
+qqnorm(Y2011, main="2011", xlab="", ylab="", cex=0.8); qqline(Y2011)
+par(mfrow=c(1,1))
+```
+
+There is a question whether the 2011 internet usage data follow a symmetric distribution 
+for the selected countries. 
+
+
+Optional: Look at the data. Which countries changed the most?
+
+```{r, fig.width=5, fig.height=5 }
+plot(Y2001, Y2011, xlab="Internet users per 100 in 2001", ylab="Internet users per 100 in 2011", xlim=c(-1, 70),
+     ylim=c(0,80),col= "blue", pch = 19, cex = 1, lty = "solid", lwd = 2)
+text(Y2001, Y2011, labels=countries, cex= 0.7, pos=3)
+abline(a=0,b=1)
+```
+
+

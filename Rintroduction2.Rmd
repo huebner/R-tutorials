@@ -1,0 +1,124 @@
+---
+title: "More advanced: Reading data files and R markdown options"
+author: ""
+date: ""
+output: word_document
+---
+
+
+## Reading internet data into R
+
+Suppose you have a larger data list in a file. You can read it from the folder where you save the Session (this is explained in the document Rintro.docx on LON CAPA). For our class I saved a data file on the STT Class pages. Let's read in the cereals data and the body fat data. The cereals data is an excel file (.csv extension) and the body fat data is a text file (.txt extension). They can be read into R directly with the URL as follows. The R command "head" will show you the top few lines, the command "tail" what show you the last few lines
+
+```{r}
+cereal=read.csv("http://stt.msu.edu/Academics/ClassPages/uploads/FS14/200-1/Ch08_Cereals.csv", header=T)
+
+head(cereal)
+
+body=read.table("http://stt.msu.edu/Academics/ClassPages/uploads/FS14/200-1/Ch08_Body_fatv2.txt", header=T, sep="")
+
+head(body)
+tail(body)
+
+```
+
+In the line that reads in the data the "header=TRUE" or "header=T" says that there are variable names in the data file. For the text file (body fat) we need to say how the columns are separated, in this case with a space, sep="".
+
+Have a look at the upper right window under the "Environment" tab. There are now "Data" (cereal and body) and Values (x). If you click on "body" it will give you a quick overview what is in the data set. In this case there are three variables, all integers (=discrete numerical data) and the first few observations of each variable. Under values you see the data list you named "x".
+
+The data set "body" has three variables (stored in columns) and 20 observations each.  You can access the first column, Waist measurements, as follows
+
+```{r}
+
+# body[row number, column number]
+# if the row number is left empty, all rows are shown, anmely all 20 Waist measurments
+body[,1]
+
+# or using the variable name
+
+body$Waist
+
+```
+
+If you wanted to see all measurements of the 4th individual you type
+```{r}
+body[4,]
+
+```
+
+
+
+## Reading text files (data) into R 
+Suppose you have a  dataset in a file (in your Stat folder!). You can read these all at once. 
+
+
+```{r, error=TRUE}
+# Read the bodyfat data if you have such a file
+# If there are variable names, add "header=TRUE"
+# Indicate the type of separator (commas "'", space "", etc)
+body<- read.table("Ch08_Body_fat.txt", header=TRUE, sep="")
+```
+You may get error messages, if the datafile is not well organized.You may need to open the text file in a text editor and have a look (don't use Word for data files). Rstudio thinks the first line has 7 columns while the next line has only three columns. So open the text file, change variable names, make sure the name of each column is only one word, and save the file as "Ch08_Body_fatv2.txt". If you make changes to any dataset, leave the original and save the changes in another file.
+
+```{r}
+# Read the bodyfat data (text file)
+# Be sure you changed "Body Fat" to one word "Bodyfat"
+body<- read.table("Ch08_Body_fatv2.txt", header=TRUE, sep="")
+```
+
+You can look at the top and bottom few lines
+```{r}
+head(body)
+tail(body)
+```
+
+The structure in R called *data frame* is a collection of all variables. To extract values for the variable "Weight" we use the name of the dataset and the name of the Variable after a $ sign. Let's see the first three weight measurements from this dataset:
+
+```{r}
+body$Weight[1:3]
+```
+To see both a histogram and a boxplot in the same figure, we can tell R how to organize it: 1 row for 2 figures side-by-side. Try it different ways, too! There are also many ways to modify plots with labels of the axes, title, colors, lines, points, text, etc.
+
+
+```{r, fig.height=3, fig.width=5}
+par(mfrow=c(1,2))
+hist(body$Weight, nclass=10, col="grey", main="", xlab="weight")
+boxplot(body$Weight, col="grey", ylab="Weight")
+par(mfrow=c(1,1))
+```
+
+You can also embed plots, for example making a scatter plot of weight versus body fat. The plot function has the format "plot(x,y)" where x is the variable for the horizontal axis and y is the variable for the vertical axis. 
+
+```{r, smallplot, fig.height=3, fig.width=4}
+plot(body$Weight, body$BodyFat, xlab="weight (lb)", ylab="body fat (%)")
+```
+
+
+
+## Reading  Excel files into R
+If you wanted to read an excel file instead of a textfile, you can use "read.csv", if it is a ".csv" file" or  type the command install.packages(xlsx) and then do he following.
+
+```{r}
+library(xlsx)
+cereal<-read.xlsx("Ch08_Cereals.xls", sheetName = "Sheet1")
+head(cereal)
+```
+
+The correlation between sugar content and calories in a serving size of these cereal boxes is
+```{r}
+cor(cereal$calories, cereal$sugar)
+```
+
+## Things to know about the R chunk in R markdown files
+* ```echo = FALSE``` in  {r, echo=FALSE} will not show the R commands in the final document.  
+* ```include=FALSE``` will evaluate the R chunk, but no output will be shown in the document.
+* Your document will stop compiling, if you have an error somehwere in the R code. It is recommended that you evaluate each R chunk separately to make sure it works. Also do a spell check before clicking on "Knit Word" or "Knit html" or "Knit pdf" for finalizing your document.
+* You can use output from the R chunk in your text. For example, the correlation of calories and sugar content of cereal is `r cor(cereal$calories, cereal$sugar)`. In order to do that you use a left apostrophe  followed by "r" followed by a function or R variable followed by a left apostrophe `
+
+
+
+## Other convenient features for R markdown documents
+Here is a very neat feature of R markdown: you can add links to a text or to figures from the internet. For example, see [A short introduction to R] (http://cran.r-project.org/doc/contrib/Torfs+Brauer-Short-R-Intro.pdf) by Paul Torfs and Claudia Bauer. In order to do so you choose square brackets: [Here is the text for the link]
+followed by round brackets with the URL (http://...). If you want to insert a figure from the internet you do the same but with a ! in front of the square brackets, e.g.
+![popularity of data analysis software in job advertisements](http://r4stats.files.wordpress.com/2012/04/fig_1a_indeedjobs2014ge2501.png)
+

@@ -1,0 +1,134 @@
+---
+title: "Multiple Regression"
+output: word_document
+---
+In many regression models the response variable $y$ may be related to more than one explanatory variable. The predictors $x_1, \dots x_k$ that have a significant effect can be incorporated in the model
+$$
+y=\beta_0 + \beta_1 x_1 +\dots + \beta_p x_p + \varepsilon
+$$
+
+### Example: Baseball
+
+To predict the number of wins for a professional baseball team data for the following variables were collected: *batavg= batting average, rbi=runs batted in, stole= number of stolen bases, strkout=number of struck out, era=earned run average, caught=number caught stealing bases, errors=number of errors.*
+
+```{r}
+baseball=read.csv("http://stt.msu.edu/Academics/ClassPages/uploads/SS15/351-4/baseball_wins.csv", header=T)
+```
+
+
+Regression analysis with all predictors:
+```{r}
+fit<-lm(wins~batavg+rbi+stole+strkout+caught+error+era, baseball)
+summary(fit)
+```
+What are the three variables with the most significant pvalues?
+
+```{r}
+sort(summary(fit)$coefficients[,4])[1:3]
+```
+
+Simple linear regression analysis with the two most significant predictors:
+```{r}
+fit1<-lm(wins~era, baseball)
+summary(fit1)
+fit2<-lm(wins~rbi, baseball)
+summary(fit2)
+```
+ The R-squared value for all seven predictors is `r summary(fit)$adj.r.squared` while the R-squared for *era* is  `r summary(fit1)$adj.r.squared` and for *rbi* `r summary(fit2)$adj.r.squared`.
+ 
+A model with the these two variables is
+
+```{r}
+fit3<-lm(wins~era+rbi, baseball)
+summary(fit3)
+```
+This has R-squared value `r summary(fit3)$adj.r.squared`.
+
+Is it possible to find a third variable, which together with *era* and *rbi*, improves R-squared?
+
+```{r}
+fitx<-lm(wins~era+rbi+batavg, baseball); summary(fitx)
+fitx<-lm(wins~era+rbi+stole, baseball); summary(fitx)
+fitx<-lm(wins~era+rbi+strkout, baseball); summary(fitx)
+fitx<-lm(wins~era+rbi+caught, baseball); summary(fitx)
+fitx<-lm(wins~era+rbi+error, baseball); summary(fitx)
+```
+
+The multiple regression model with the highest R-squared includes the variables *era, rbi, error*
+with adjusted R-squared  `r summary(fitx)$adj.r.squared`.
+
+
+Confidence intervals and Anova table is given as follows:
+
+```{r}
+fitx<-lm(wins~era+rbi+error, baseball);
+confint(fitx)
+anova(fitx)
+```
+
+To test the utility of the full model against the null model the hypotheses are
+$$
+\begin{align}
+H_0:  y =\beta_0 + \varepsilon & \\
+H_A:  y =\beta_0 + \beta_1 \mbox{era} + \beta_1 \mbox{rbi} + \beta_1 \mbox{error} + \varepsilon&
+\end{align}
+$$
+
+The ANOVA table is given by
+
+```{r, kable,  results="asis"}
+library(knitr)
+fitx<-lm(wins~era+rbi+error, baseball);
+xx<-anova(fitx)
+msr<-sum(xx[1:3,2])/sum(xx[1:3,1])
+fvalue<-msr/xx[4,3]
+df1<-sum(xx[1:3,1])
+df2<-sum(xx[4,1])
+pval<-1-pf(fvalue,df1,df2)
+yy<-rbind(c(df1,sum(xx[1:3,2]),msr, fvalue, pval ), c(xx[4,1], xx[4,2], xx[4,3],NA, NA))
+colnames(yy)<-c("DF","SS", "MS", "F Value", "P(>F)")
+rownames(yy)<-c("regression", "residual")
+kable(yy, format='markdown')
+```
+
+
+
+A residual plot and a normal probability plot for residuals assesses the validity of model
+
+```{r fig.width=5, fig.height=5}
+fit.lm<-lm(wins~era+rbi+error, baseball)
+par(mfrow=c(2,2))
+plot(fit)
+par(mfrow=c(1,1))
+```
+
+If one wants to test the model with *era* against a model with *era, rbi,* and *error*, then the full model has $p=3$ predictors and the partial model has $l=1$ predictors. The test statistic for testing $H_0$ (partial model) versus $H_A$ (full model) is
+
+$$
+F = \frac{(SSE_{\mbox{part}} - SSE_{\mbox{full}})/(p-l)}{SSE/(n-p-1)}
+$$
+
+with $p-l$ and $n-p-1$ degrees of freedom. 
+
+The ANOVA table comparing these two models is as follows:
+
+```{r, results='asis'}
+fitx<-lm(wins~era+rbi+error, baseball);  #p=3
+fity<-lm(wins~era, baseball);  #l=1
+kable(anova(fitx)) # full model
+kable(anova(fity)) # partial model
+kable(anova(fity, fitx)) #ANOVA table for comparing full and partial model
+xx<-anova(fitx)
+ssr<-sum(xx[2:3,2])
+msr<-ssr/sum(xx[2:3,1])
+fvalue<-msr/xx[4,3]
+df1<-sum(xx[2:3,1])  # p-l
+df2<-sum(xx[4,1])    # n-(p+1)
+pval<-1-pf(fvalue,df1,df2)
+yy<-rbind(c(df1,sum(xx[2:3,2]),msr,fvalue, pval), c(xx[4,1], xx[4,2],xx[4,3],NA,NA))
+colnames(yy)<-c("DF","SS", "MS", "F Value", "P(>F)")
+rownames(yy)<-c("regression", "residual")
+kable(yy)  #ANOVA table for comparing full and partial model
+```
+
+
