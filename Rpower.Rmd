@@ -1,6 +1,8 @@
 ---
 title: 'Hypothesis test for mean: power and sample size'
-output: pdf_document
+author: "Marianne Huebner, Michigan State University"
+date: '`r Sys.Date()`'
+output: word_document
 ---
 
 __Background:__ The impact of habitual physical activity was studied for 25 year old women in Malmo, Sweden (PEAK-25 Study).

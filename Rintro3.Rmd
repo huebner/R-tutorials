@@ -1,5 +1,7 @@
 ---
 title: "Reading and saving data in Rstudio"
+author: "Marianne Huebner, Michigan State University"
+date: '`r Sys.Date()`'
 output: word_document
 ---
 ## Reading data into Rstudio from the menu

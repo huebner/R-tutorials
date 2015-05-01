@@ -1,6 +1,8 @@
 ---
 title: "Inference for means"
-output: pdf_document
+author: "Marianne Huebner, Michigan State University"
+date: '`r Sys.Date()`'
+output: word_document
 ---
 
 ## Confidence Interval for $\mu$

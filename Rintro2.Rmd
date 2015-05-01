@@ -1,6 +1,8 @@
 ---
 title: "Introduction to R markdown"
-output: pdf_document
+author: "Marianne Huebner, Michigan State University"
+date: '`r Sys.Date()`'
+output: word_document
 ---
 In Rstudio click on File > New File. One of the options is R markdown. You can give this project a  title, your name and choose whether you want the output saved  in Word or html or pdf format. Only choose PDF output, if you have Miktex installed (also free software). 
 

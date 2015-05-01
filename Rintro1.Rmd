@@ -1,6 +1,8 @@
 ---
 title: "Introduction to R and Rstudio"
-output: pdf_document
+author: "Marianne Huebner, Michigan State University"
+date: '`r Sys.Date()`'
+output: word_document
 ---
 
 ### Download and install R and Rstudio

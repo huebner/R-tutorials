@@ -1,6 +1,8 @@
 ---
 title: "Linear Regression Analysis"
-output: pdf_document
+author: "Marianne Huebner, Michigan State University"
+date: '`r Sys.Date()`'
+output: word_document
 ---
 
 ### Example: Association of boiling point and pressure

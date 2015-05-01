@@ -1,5 +1,7 @@
 ---
 title: "Multiple Regression"
+author: "Marianne Huebner, Michigan State University"
+date: '`r Sys.Date()`'
 output: word_document
 ---
 In many regression models the response variable $y$ may be related to more than one explanatory variable. The predictors $x_1, \dots x_k$ that have a significant effect can be incorporated in the model

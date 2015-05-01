@@ -1,6 +1,8 @@
 ---
 title: 'Categorical data analysis: Two way contingency tables'
-output: pdf_document
+author: "Marianne Huebner, Michigan State University"
+date: '`r Sys.Date()`'
+output: word_document
 ---
 
 Students in grades 4-6 were asked whether good grades, athletic ability, or popularity was most important to them. The responses were divided by school area into urban, suburban, and rural. Is there an association between the type of school area and the students' choice of good grades, athletic ability, or popularity as most important?  
