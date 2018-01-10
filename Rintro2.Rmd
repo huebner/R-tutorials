@@ -11,12 +11,13 @@ In Rstudio an "untitled" page will appear with a template. First save this file 
 ## Create a document
 In the toolbar "ABC" is your spell checker. Always run your spell checker after you finished.
 
-In the toolbar the question mark has a "Markdown Quick Reference". If you click on that it will open in the lower right window with tips how to get italic, bold face, or larger text size, and more.
+In the toolbar uner Help there is a link to "Markdown Quick Reference". If you click on that it will open in the lower right window with tips how to get italic, bold face, or larger text size, and more.
 
-In the toolbar, click on "Knit Word" (or "Knit html" or Knit PDF"). This will start a process that converts the current template file into a Word file (or html or pdf) which opens automatically. Do this now.  
+In the toolbar, click on "Knit". This will start a process that converts the current template file into a Word file (or html or pdf) which opens automatically. Do this now.  
 
 ## Add R commands
-Click on "Chunks" and then "Insert Chunk". This will result in a gray area starting with three backslashes followed by {r} and ending with three backslashes. In this grey area you can type R commands. A comment can be inserted following a # sign. If you click anywhere in the grey area and then click on Chunks > Run Current Chunk, all R commands will be automatically pasted into the "Console" window and evaluated. If you only want to run one line, highlight this line, and click on Run.  
+Click on "Inster" and then "R". This will result in a gray area starting with three backslashes followed by {r} and ending with three backslashes. In this grey area you can type R commands. A comment can be inserted following a # sign. If you click anywhere in the grey area and then click on Run > Run Current Chunk, all R commands will be automatically pasted into the "Console" window and evaluated. If you only want to run one line, highlight this line, and click on Run.  
+
 
 
 ## Things to know about the R chunk
@@ -24,13 +25,18 @@ Click on "Chunks" and then "Insert Chunk". This will result in a gray area start
 * ```include=FALSE``` will evaluate the R chunk, but no output will be shown in the document.
 * Your document will stop compiling, if you have an error somewhere in the R code. It is recommended that you evaluate each R chunk separately to make sure it works. 
 * Do a spell check before clicking on "Knit Word" or "Knit html" or "Knit pdf" for finalizing your document.
-* You can use output from the R chunk in your text. For example, the Rchunk reads a dataset (use 
-`header=T, sep=""`)
+* You can use output from the R chunk in your text. For example, the Rchunk reads a dataset (use  `header=T, sep=""`)
+
 ```{r}
-body=read.table("http://stt.msu.edu/Academics/ClassPages/uploads/FS14/200-1/Ch08_Body_fatv2.txt", header=T, sep="")
+body<-data.frame(waist=c(32,36,38,33,39,40,41,35,38,38,33,40,36,32,44,33,41,34,34,44), weight=c(175,181,200,159,196,192,205,173,187,188,188,240,175,168,246,160,215, 159,146,219), bodyfat=c(6,21,15,6,22,31,32,21,25,30,10,20,22,9,38,10,27,12,10,28))
+                 
 ```
-In order to include R output in the text,  use a left apostrophe  followed by "r" followed by a function or R variable followed by a left apostrophe. Example (without apostrophes):  ` r cor(body$Weight, body$BodyFat) ` 
-In the text this looks like (with apostrophes): The correlation of weight and body fat content of the dataset "body" is `r cor(body$Weight, body$BodyFat)`. 
+
+In order to include R output in the text,  use a left apostrophe  followed by "r" followed by a function or R variable followed by a left apostrophe. Example (with spaces before and after the apostrophes): 
+
+` r cor(body$weight, body$bodyfat) ` 
+
+In the text this looks like (without spaces before and after the apostrophes): The correlation of weight and body fat content of the dataset "body" is `r cor(body$weight, body$bodyfat)`. 
 
 
 ## Finish your Rstudio session
@@ -50,15 +56,15 @@ In your document you can include figures. For example, to see both a histogram a
 
 ```{r, fig.height=3, fig.width=5}
 par(mfrow=c(1,2))
-hist(body$Weight, nclass=10, col="grey", main="", xlab="weight")
-boxplot(body$Weight, col="grey", ylab="Weight")
+hist(body$weight, nclass=10, col="grey", main="", xlab="Weight")
+boxplot(body$weight, col="grey", ylab="Weight")
 par(mfrow=c(1,1))
 ```
 
 You can also embed plots, for example making a scatter plot of weight versus body fat. The plot function has the format "plot(x,y)" where x is the variable for the horizontal axis and y is the variable for the vertical axis. 
 
 ```{r, smallplot, fig.height=3, fig.width=3}
-plot(body$Weight, body$BodyFat, xlab="weight (lb)", ylab="body fat (%)")
+plot(body$weight, body$bodyfat, xlab="weight (lb)", ylab="body fat (%)")
 ```
 
 
