@@ -11,12 +11,12 @@ In Rstudio an "untitled" page will appear with a template. First save this file 
 ## Create a document
 In the toolbar "ABC" is your spell checker. Always run your spell checker after you finished.
 
-In the toolbar uner Help there is a link to "Markdown Quick Reference". If you click on that it will open in the lower right window with tips how to get italic, bold face, or larger text size, and more.
+In the toolbar under Help there is a link to "Markdown Quick Reference". If you click on that it will open in the lower right window with tips how to get italic, bold face, or larger text size, and more.
 
 In the toolbar, click on "Knit". This will start a process that converts the current template file into a Word file (or html or pdf) which opens automatically. Do this now.  
 
 ## Add R commands
-Click on "Inster" and then "R". This will result in a gray area starting with three backslashes followed by {r} and ending with three backslashes. In this grey area you can type R commands. A comment can be inserted following a # sign. If you click anywhere in the grey area and then click on Run > Run Current Chunk, all R commands will be automatically pasted into the "Console" window and evaluated. If you only want to run one line, highlight this line, and click on Run.  
+Click on "Insert" and then "R". This will result in a gray area starting with three backslashes followed by {r} and ending with three backslashes. In this grey area you can type R commands. A comment can be inserted following a # sign. If you click anywhere in the grey area and then click on Run > Run Current Chunk, all R commands will be automatically pasted into the "Console" window and evaluated. If you only want to run one line, highlight this line, and click on Run.  
 
 
 
@@ -36,7 +36,7 @@ In order to include R output in the text,  use a left apostrophe  followed by "r
 
 ` r cor(body$weight, body$bodyfat) ` 
 
-In the text this looks like (without spaces before and after the apostrophes): The correlation of weight and body fat content of the dataset "body" is `r cor(body$weight, body$bodyfat)`. 
+In the text this looks like (without spaces before and after the apostrophes): The correlation of weight and body fat content of the data set "body" is `r cor(body$weight, body$bodyfat)`. 
 
 
 ## Finish your Rstudio session
